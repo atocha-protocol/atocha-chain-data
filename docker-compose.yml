@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:12-alpine
     ports:
-      - 5432:5432
+      - 5433:5432
     volumes:
       - .data/postgres:/var/lib/postgresql/data
     environment:
@@ -41,7 +41,7 @@ services:
   graphql-engine:
     image: onfinality/subql-query:latest
     ports:
-      - 3000:3000
+      - 3010:3000
     depends_on:
       "postgres":
         condition: service_healthy

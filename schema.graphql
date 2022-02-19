@@ -1,17 +1,42 @@
-type StarterEntity @entity {
 
-  id: ID! #id is a required field
+type PuzzleCreatedEvent @entity {
+  id: ID! # puzzle_hash
+  who: String
+  puzzle_hash: String!
+  create_bn: String
+  event_bn: String
+  deposit: BigInt
+  answer_infos: [AnswerCreatedEvent] @derivedFrom(field: "puzzle_info")
+  challenge_infos: [ChallengeDepositEvent] @derivedFrom(field: "puzzle_info")
+  challenge_status: [ChallengeStatusChangeEvent] @derivedFrom(field: "puzzle_info")
+}
 
-  field1: Int!
+type AnswerCreatedEvent @entity {
+  id: ID! # BlockNumber && event_id
+  who: String!
+  puzzle_hash: String!
+  answer_content: String!
+  create_bn: String!
+  event_bn: String!
+  result_type: String!
+  puzzle_info: PuzzleCreatedEvent!
+}
 
-  field2: String #filed2 is an optional field
+type ChallengeDepositEvent @entity {
+  id: ID! # BlockNumber && event_id
+  who: String!
+  puzzle_hash: String!
+  deposit: BigInt!
+  deposit_type: String!
+  event_bn: String!
+  puzzle_info: PuzzleCreatedEvent!
+}
 
-  field3: BigInt
 
-  field4: Date
-
-  field5: Boolean
-
-
-
+type ChallengeStatusChangeEvent @entity {
+  id: ID! # BlockNumber && event_id
+  puzzle_info: PuzzleCreatedEvent!
+  challenge_status: String!
+  change_bn: String!
+  event_bn: String!
 }
