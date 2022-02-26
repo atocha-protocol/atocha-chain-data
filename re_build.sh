@@ -1,5 +1,5 @@
 docker-compose down
-rm -rf .data
+#rm -rf .data
 yarn codegen
 yarn build
 docker-compose up

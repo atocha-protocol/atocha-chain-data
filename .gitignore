@@ -23,6 +23,8 @@ package-lock.json
 # Package files
 *.jar
 
+.data
+
 # Maven
 target/
 dist/

@@ -10,11 +10,11 @@ schema:
 
 network:
   endpoint: 'ws://148.72.247.143:8844'
-  genesisHash: '0x9ec6cc59bfc137abf5aca3cb958e2add2815e0cde715e2c3081b7183219acd2a' # Atocha
+  genesisHash: '0x17264823cc020f0f009cfef5e75b6c5d8cb020ef18e2d62ff613db6cfe46d806' # Atocha
 
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 114800
+    startBlock: 1
     mapping:
       file: "./dist/index.js"
       handlers:
@@ -38,4 +38,18 @@ dataSources:
           filter:
             module: atochaFinace
             method: ChallengeStatusChange
-
+        - handler: handlePuzzleStatusChangeEvent
+          kind: substrate/EventHandler
+          filter:
+            module: atochaModule
+            method: PuzzleStatusChange
+        - handler: handleTakeTokenRewardEvent
+          kind: substrate/EventHandler
+          filter:
+            module: atochaFinace
+            method: TakeTokenReward
+        - handler: handleTakePointRewardEvent
+          kind: substrate/EventHandler
+          filter:
+            module: atochaFinace
+            method: TakePointReward

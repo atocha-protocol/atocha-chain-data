@@ -3,12 +3,16 @@ type PuzzleCreatedEvent @entity {
   id: ID! # puzzle_hash
   who: String
   puzzle_hash: String!
-  create_bn: String
-  event_bn: String
+  create_bn: BigInt
+  event_bn: BigInt
+  event_hash: String
   deposit: BigInt
+  puzzle_status: [PuzzleStatusChangeEvent] @derivedFrom(field: "puzzle_info")
   answer_infos: [AnswerCreatedEvent] @derivedFrom(field: "puzzle_info")
   challenge_infos: [ChallengeDepositEvent] @derivedFrom(field: "puzzle_info")
   challenge_status: [ChallengeStatusChangeEvent] @derivedFrom(field: "puzzle_info")
+  take_reward: [TakeTokenRewardEvent] @derivedFrom(field: "puzzle_info")
+  take_point: [TakePointRewardEvent] @derivedFrom(field: "puzzle_info")
 }
 
 type AnswerCreatedEvent @entity {
@@ -16,8 +20,9 @@ type AnswerCreatedEvent @entity {
   who: String!
   puzzle_hash: String!
   answer_content: String!
-  create_bn: String!
-  event_bn: String!
+  create_bn: BigInt!
+  event_bn: BigInt!
+  event_hash: String!
   result_type: String!
   puzzle_info: PuzzleCreatedEvent!
 }
@@ -28,7 +33,8 @@ type ChallengeDepositEvent @entity {
   puzzle_hash: String!
   deposit: BigInt!
   deposit_type: String!
-  event_bn: String!
+  event_bn: BigInt!
+  event_hash: String!
   puzzle_info: PuzzleCreatedEvent!
 }
 
@@ -37,6 +43,36 @@ type ChallengeStatusChangeEvent @entity {
   id: ID! # BlockNumber && event_id
   puzzle_info: PuzzleCreatedEvent!
   challenge_status: String!
-  change_bn: String!
-  event_bn: String!
+  change_bn: BigInt!
+  event_bn: BigInt!
+  event_hash: String!
+}
+
+# Puzzle status change.
+type PuzzleStatusChangeEvent @entity {
+  id: ID! # BlockNumber + eventIdx.
+  event_bn: BigInt!
+  event_hash: String!
+  puzzle_info: PuzzleCreatedEvent!
+  puzzle_status: String!
+}
+
+# atochaFinace.TakeTokenReward
+type TakeTokenRewardEvent @entity {
+  id: ID! # Puzzle hash.
+  event_bn: BigInt!
+  event_hash: String!
+  puzzle_info: PuzzleCreatedEvent!
+  token: BigInt!
+  fee: BigInt!
+}
+
+# atochaFinace.TakePointReward
+type TakePointRewardEvent @entity {
+  id: ID! # Puzzle hash.
+  event_bn: BigInt!
+  event_hash: String!
+  puzzle_info: PuzzleCreatedEvent!
+  point: BigInt!
+  fee: BigInt!
 }
