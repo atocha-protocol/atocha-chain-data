@@ -24,7 +24,7 @@ export async function handlePuzzleCreatedEvent(event: SubstrateEvent): Promise<v
 export async function handleAnswerCreatedEvent(event: SubstrateEvent): Promise<void> {
     const {event: {data: [who, answer_content, puzzle_hash, create_bn, result_type]}} = event;
     await makeSurePuzzleCreated(puzzle_hash.toHuman().toString());
-    const record = new AnswerCreatedEvent(puzzle_hash.toHuman().toString());
+    const record = new AnswerCreatedEvent(`${event.block.block.header.number.toString()}-${event.idx}`);
     record.who = who.toString();
     record.answer_content = answer_content.toHuman().toString();
     record.create_bn = BigInt(create_bn.toString());
