@@ -14,7 +14,8 @@ network:
 
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 63000
+#    startBlock: 63000
+    startBlock: 92000
     mapping:
       file: "./dist/index.js"
       handlers:
@@ -53,3 +54,8 @@ dataSources:
           filter:
             module: atochaFinace
             method: TakePointReward
+        - handler: handlePuzzleDepositEvent
+          kind: substrate/EventHandler
+          filter:
+            module: atochaFinace
+            method: PuzzleDeposit

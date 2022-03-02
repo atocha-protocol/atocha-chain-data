@@ -6,11 +6,12 @@ type PuzzleCreatedEvent @entity {
   create_bn: BigInt
   event_bn: BigInt
   event_hash: String
-  deposit: BigInt
+  owner_deposit: BigInt
   puzzle_status: [PuzzleStatusChangeEvent] @derivedFrom(field: "puzzle_info")
   answer_infos: [AnswerCreatedEvent] @derivedFrom(field: "puzzle_info")
   challenge_infos: [ChallengeDepositEvent] @derivedFrom(field: "puzzle_info")
   challenge_status: [ChallengeStatusChangeEvent] @derivedFrom(field: "puzzle_info")
+  deposit_infos: [PuzzleDepositEvent] @derivedFrom(field: "puzzle_info")
   take_reward: [TakeTokenRewardEvent] @derivedFrom(field: "puzzle_info")
   take_point: [TakePointRewardEvent] @derivedFrom(field: "puzzle_info")
 }
@@ -75,4 +76,26 @@ type TakePointRewardEvent @entity {
   puzzle_info: PuzzleCreatedEvent!
   point: BigInt!
   fee: BigInt!
+}
+
+# atochaModule.AdditionalSponsorship
+## TODO:: Remove under event.
+#type AdditionalSponsorshipEvent @entity {
+#  id: ID! # block_number + event_id
+#  event_bn: BigInt!
+#  event_hash: String!
+#  puzzle_info: PuzzleCreatedEvent!
+#  who: String!
+#  deposit: BigInt!
+#  reason: String
+#}
+
+type PuzzleDepositEvent @entity {
+  id: ID! # block_number + event_id
+  event_bn: BigInt!
+  event_hash: String!
+  puzzle_info: PuzzleCreatedEvent!
+  who: String!
+  deposit: BigInt!
+  tip: String
 }
