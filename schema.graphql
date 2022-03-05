@@ -7,13 +7,20 @@ type PuzzleCreatedEvent @entity {
   event_bn: BigInt
   event_hash: String
   owner_deposit: BigInt
-  puzzle_status: [PuzzleStatusChangeEvent] @derivedFrom(field: "puzzle_info")
-  answer_infos: [AnswerCreatedEvent] @derivedFrom(field: "puzzle_info")
-  challenge_infos: [ChallengeDepositEvent] @derivedFrom(field: "puzzle_info")
-  challenge_status: [ChallengeStatusChangeEvent] @derivedFrom(field: "puzzle_info")
-  deposit_infos: [PuzzleDepositEvent] @derivedFrom(field: "puzzle_info")
-  take_reward: [TakeTokenRewardEvent] @derivedFrom(field: "puzzle_info")
-  take_point: [TakePointRewardEvent] @derivedFrom(field: "puzzle_info")
+  dyn_have_matched_answer: Boolean!,
+  dyn_challenge_status: String!,
+  dyn_puzzle_status: String!
+  dyn_challenge_deadline: BigInt!,
+  dyn_raise_deadline: BigInt!,
+  ref_puzzle_status: [PuzzleStatusChangeEvent] @derivedFrom(field: "puzzle_info")
+  ref_answer_infos: [AnswerCreatedEvent] @derivedFrom(field: "puzzle_info")
+  ref_challenge_infos: [ChallengeDepositEvent] @derivedFrom(field: "puzzle_info")
+  ref_challenge_status: [ChallengeStatusChangeEvent] @derivedFrom(field: "puzzle_info")
+  ref_deposit_infos: [PuzzleDepositEvent] @derivedFrom(field: "puzzle_info")
+  ref_take_reward: [TakeTokenRewardEvent] @derivedFrom(field: "puzzle_info")
+  ref_take_point: [TakePointRewardEvent] @derivedFrom(field: "puzzle_info")
+  ref_challenge_deadline: [AnnouncePuzzleChallengeDeadlineEvent] @derivedFrom(field: "puzzle_info")
+  ref_raise_deadline: [ChallengeRaisePeriodDeadlineEvent] @derivedFrom(field: "puzzle_info")
 }
 
 type AnswerCreatedEvent @entity {
@@ -98,4 +105,22 @@ type PuzzleDepositEvent @entity {
   who: String!
   deposit: BigInt!
   tip: String
+}
+
+# atochaModule.AnnouncePuzzleChallengeDeadline
+type AnnouncePuzzleChallengeDeadlineEvent @entity {
+  id: ID! # block_number + event_id
+  deadline: BigInt!
+  event_bn: BigInt!
+  event_hash: String!
+  puzzle_info: PuzzleCreatedEvent!
+}
+
+# atochaFinace.ChallengeRaisePeriodDeadline
+type ChallengeRaisePeriodDeadlineEvent @entity {
+  id: ID! # block_number + event_id
+  deadline: BigInt!
+  event_bn: BigInt!
+  event_hash: String!
+  puzzle_info: PuzzleCreatedEvent!
 }
