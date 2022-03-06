@@ -51,7 +51,7 @@ type ChallengeStatusChangeEvent @entity {
   id: ID! # BlockNumber && event_id
   puzzle_info: PuzzleCreatedEvent!
   challenge_status: String!
-  change_bn: BigInt!
+#  change_bn: BigInt!
   event_bn: BigInt!
   event_hash: String!
 }

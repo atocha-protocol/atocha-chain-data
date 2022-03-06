@@ -78,8 +78,8 @@ export async function handleChallengeStatusChangeEvent(event: SubstrateEvent): P
     for(const key in stauts_info.toHuman() as any) {
         record.challenge_status = key;
         // logger.info(`stauts_info..toJSON()()[key] = ${(stauts_info.toHuman()[key] as Balance).toBigInt()}`, );
-        let change_bn = stauts_info.toHuman()[key].replace(',','');
-        record.change_bn = BigInt(change_bn);
+        // let change_bn = stauts_info.toHuman()[key].replace(',','');
+        // record.change_bn = BigInt(change_bn);
     }
     // logger.info(`record = ${record}`);
     record.puzzle_infoId = puzzle_hash.toHuman().toString();
