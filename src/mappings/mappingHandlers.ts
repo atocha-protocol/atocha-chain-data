@@ -85,28 +85,29 @@ export async function handleChallengeStatusChangeEvent(event: SubstrateEvent): P
     record.puzzle_infoId = puzzle_hash.toHuman().toString();
     await record.save();
 
-    if(puzzle_obj.dyn_challenge_status == '' || puzzle_obj.dyn_challenge_status == 'Raise') {
-        puzzle_obj.dyn_challenge_status = record.challenge_status;
-    }else{
-        switch (record.challenge_status) {
-            case 'RaiseCompleted': {
-                if(puzzle_obj.dyn_challenge_status == 'Raise') {
-                    puzzle_obj.dyn_challenge_status = 'RaiseFundsBack'
-                }
-            }
-            case 'RaiseFundsBack': {
-                if(puzzle_obj.dyn_challenge_status == 'Raise') {
-                    puzzle_obj.dyn_challenge_status = 'RaiseFundsBack'
-                }
-            }
-            case 'JudgePassed': {
-                puzzle_obj.dyn_challenge_status = 'JudgePassed'
-            }
-            case 'JudgeRejected': {
-                puzzle_obj.dyn_challenge_status = 'JudgeRejected'
-            }
-        }
-    }
+    // if(puzzle_obj.dyn_challenge_status == '' || puzzle_obj.dyn_challenge_status == 'Raise') {
+    //     puzzle_obj.dyn_challenge_status = record.challenge_status;
+    // }else{
+    //     switch (record.challenge_status) {
+    //         case 'RaiseCompleted': {
+    //             if(puzzle_obj.dyn_challenge_status == 'Raise') {
+    //                 puzzle_obj.dyn_challenge_status = 'RaiseFundsBack'
+    //             }
+    //         }
+    //         case 'RaiseFundsBack': {
+    //             if(puzzle_obj.dyn_challenge_status == 'RaiseCompleted') {
+    //                 puzzle_obj.dyn_challenge_status = 'RaiseFundsBack'
+    //             }
+    //         }
+    //         case 'JudgePassed': {
+    //             puzzle_obj.dyn_challenge_status = 'JudgePassed'
+    //         }
+    //         case 'JudgeRejected': {
+    //             puzzle_obj.dyn_challenge_status = 'JudgeRejected'
+    //         }
+    //     }
+    // }
+    puzzle_obj.dyn_challenge_status = record.challenge_status;
     await puzzle_obj.save();
 }
 
