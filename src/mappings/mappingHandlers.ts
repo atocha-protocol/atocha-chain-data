@@ -107,7 +107,10 @@ export async function handleChallengeStatusChangeEvent(event: SubstrateEvent): P
     //         }
     //     }
     // }
-    puzzle_obj.dyn_challenge_status = record.challenge_status;
+
+    if(puzzle_obj.dyn_challenge_status!= 'JudgePassed' && puzzle_obj.dyn_challenge_status!= 'JudgeRejected'){
+        puzzle_obj.dyn_challenge_status = record.challenge_status;
+    }
     await puzzle_obj.save();
 }
 
