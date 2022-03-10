@@ -1,17 +1,18 @@
 
 type PuzzleCreatedEvent @entity {
   id: ID! # puzzle_hash
-  who: String
+  who: AtochaUserStruct
   puzzle_hash: String!
   create_bn: BigInt
   event_bn: BigInt
   event_hash: String
   owner_deposit: BigInt
-  dyn_have_matched_answer: Boolean!,
-  dyn_challenge_status: String!,
+  dyn_challenge_deadline: BigInt!
+  dyn_challenge_status: String!
+  dyn_have_matched_answer: Boolean!
   dyn_puzzle_status: String!
-  dyn_challenge_deadline: BigInt!,
-  dyn_raise_deadline: BigInt!,
+  dyn_raise_deadline: BigInt!
+  dyn_total_deposit: BigInt
   ref_puzzle_status: [PuzzleStatusChangeEvent] @derivedFrom(field: "puzzle_info")
   ref_answer_infos: [AnswerCreatedEvent] @derivedFrom(field: "puzzle_info")
   ref_challenge_infos: [ChallengeDepositEvent] @derivedFrom(field: "puzzle_info")
@@ -25,7 +26,7 @@ type PuzzleCreatedEvent @entity {
 
 type AnswerCreatedEvent @entity {
   id: ID! # BlockNumber && event_id
-  who: String!
+  who: AtochaUserStruct!
   puzzle_hash: String!
   answer_content: String!
   create_bn: BigInt!
@@ -37,7 +38,7 @@ type AnswerCreatedEvent @entity {
 
 type ChallengeDepositEvent @entity {
   id: ID! # BlockNumber && event_id
-  who: String!
+  who: AtochaUserStruct!
   puzzle_hash: String!
   deposit: BigInt!
   deposit_type: String!
@@ -45,7 +46,6 @@ type ChallengeDepositEvent @entity {
   event_hash: String!
   puzzle_info: PuzzleCreatedEvent!
 }
-
 
 type ChallengeStatusChangeEvent @entity {
   id: ID! # BlockNumber && event_id
@@ -102,7 +102,7 @@ type PuzzleDepositEvent @entity {
   event_bn: BigInt!
   event_hash: String!
   puzzle_info: PuzzleCreatedEvent!
-  who: String!
+  who: AtochaUserStruct!
   deposit: BigInt!
   tip: String
 }
@@ -123,4 +123,13 @@ type ChallengeRaisePeriodDeadlineEvent @entity {
   event_bn: BigInt!
   event_hash: String!
   puzzle_info: PuzzleCreatedEvent!
+}
+
+## atochaUser
+type AtochaUserStruct @entity {
+  id: ID!
+  ref_create_events: [PuzzleCreatedEvent] @derivedFrom(field: "who")
+  ref_deposit_events: [PuzzleDepositEvent] @derivedFrom(field: "who")
+  ref_answer_events: [AnswerCreatedEvent] @derivedFrom(field: "who")
+  ref_challenge_depoist_events: [ChallengeDepositEvent] @derivedFrom(field: "who")
 }

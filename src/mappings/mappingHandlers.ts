@@ -8,23 +8,25 @@ import {
     TakeTokenRewardEvent,
     TakePointRewardEvent,
     PuzzleDepositEvent,
-    AnnouncePuzzleChallengeDeadlineEvent, ChallengeRaisePeriodDeadlineEvent
+    AnnouncePuzzleChallengeDeadlineEvent, ChallengeRaisePeriodDeadlineEvent, AtochaUserStruct
 } from "../types";
 import {Balance, BlockNumber} from "@polkadot/types/interfaces";
 
 
 export async function handlePuzzleCreatedEvent(event: SubstrateEvent): Promise<void> {
     const {event: {data: [who, puzzle_hash, create_bn, deposit]}} = event;
+    await makeAtochaUserStruct(who.toString())
     let record = await PuzzleCreatedEvent.get(puzzle_hash.toHuman().toString());
     if(!record){
         record = new PuzzleCreatedEvent(puzzle_hash.toHuman().toString());
         record.dyn_challenge_deadline = BigInt(0);
         record.dyn_raise_deadline = BigInt(0);
         record.dyn_have_matched_answer = false;
+        record.dyn_total_deposit = BigInt(0);
         record.dyn_challenge_status = 'Raise';
         record.dyn_puzzle_status = 'PUZZLE_STATUS_IS_SOLVING';
     }
-    record.who = who.toString();
+    record.whoId = who.toString();
     record.puzzle_hash = puzzle_hash.toHuman().toString();
     record.create_bn = BigInt(create_bn.toString());
     record.event_bn = BigInt(event.block.block.header.number.toString());
@@ -35,9 +37,10 @@ export async function handlePuzzleCreatedEvent(event: SubstrateEvent): Promise<v
 
 export async function handleAnswerCreatedEvent(event: SubstrateEvent): Promise<void> {
     const {event: {data: [who, answer_content, puzzle_hash, create_bn, result_type]}} = event;
-    await makeSurePuzzleCreated(puzzle_hash.toHuman().toString());
+    await makeAtochaUserStruct(who.toString())
+    await makeSurePuzzleCreated(puzzle_hash.toHuman().toString(), who.toString());
     const record = new AnswerCreatedEvent(`${event.block.block.header.number.toString()}-${event.idx}`);
-    record.who = who.toString();
+    record.whoId = who.toString();
     record.answer_content = answer_content.toHuman().toString();
     record.create_bn = BigInt(create_bn.toString());
     record.event_bn = BigInt(event.block.block.header.number.toString());
@@ -55,9 +58,10 @@ export async function handleAnswerCreatedEvent(event: SubstrateEvent): Promise<v
 
 export async function handleChallengeDepositEvent(event: SubstrateEvent): Promise<void> {
     const {event: {data: [puzzle_hash, who, deposit, deposit_type]}} = event;
-    await makeSurePuzzleCreated(puzzle_hash.toHuman().toString());
+    await makeAtochaUserStruct(who.toString())
+    await makeSurePuzzleCreated(puzzle_hash.toHuman().toString(), who.toString());
     const record = new ChallengeDepositEvent(`${event.block.block.header.number.toString()}-${event.idx}`);
-    record.who = who.toString();
+    record.whoId = who.toString();
     record.puzzle_hash = puzzle_hash.toHuman().toString();
     record.event_bn = BigInt(event.block.block.header.number.toString());
     record.event_hash = event.block.block.hash.toHuman().toString()
@@ -84,29 +88,6 @@ export async function handleChallengeStatusChangeEvent(event: SubstrateEvent): P
     // logger.info(`record = ${record}`);
     record.puzzle_infoId = puzzle_hash.toHuman().toString();
     await record.save();
-
-    // if(puzzle_obj.dyn_challenge_status == '' || puzzle_obj.dyn_challenge_status == 'Raise') {
-    //     puzzle_obj.dyn_challenge_status = record.challenge_status;
-    // }else{
-    //     switch (record.challenge_status) {
-    //         case 'RaiseCompleted': {
-    //             if(puzzle_obj.dyn_challenge_status == 'Raise') {
-    //                 puzzle_obj.dyn_challenge_status = 'RaiseFundsBack'
-    //             }
-    //         }
-    //         case 'RaiseFundsBack': {
-    //             if(puzzle_obj.dyn_challenge_status == 'RaiseCompleted') {
-    //                 puzzle_obj.dyn_challenge_status = 'RaiseFundsBack'
-    //             }
-    //         }
-    //         case 'JudgePassed': {
-    //             puzzle_obj.dyn_challenge_status = 'JudgePassed'
-    //         }
-    //         case 'JudgeRejected': {
-    //             puzzle_obj.dyn_challenge_status = 'JudgeRejected'
-    //         }
-    //     }
-    // }
 
     if(puzzle_obj.dyn_challenge_status!= 'JudgePassed' && puzzle_obj.dyn_challenge_status!= 'JudgeRejected'){
         puzzle_obj.dyn_challenge_status = record.challenge_status;
@@ -156,15 +137,19 @@ export async function handleTakePointRewardEvent(event: SubstrateEvent): Promise
 // handleAdditionalSponsorshipEvent rename to handlePuzzleDepositEvent
 export async function handlePuzzleDepositEvent(event: SubstrateEvent): Promise<void> {
     const {event: {data: [puzzle_hash, who, deposit, tip]}} = event;
-    await makeSurePuzzleCreated(puzzle_hash.toHuman().toString());
+    await makeAtochaUserStruct(who.toString())
+    const puzzle_obj = await makeSurePuzzleCreated(puzzle_hash.toHuman().toString(), who.toString());
     const record = new PuzzleDepositEvent(`${event.block.block.header.number.toString()}-${event.idx}`);
     record.event_bn = BigInt(event.block.block.header.number.toString());
     record.event_hash = event.block.block.hash.toHuman().toString()
     record.puzzle_infoId = puzzle_hash.toHuman().toString();
-    record.who = who.toString();
+    record.whoId = who.toString();
     record.deposit = (deposit as Balance).toBigInt();
     record.tip = tip?tip.toHuman().toString():'';
     await record.save();
+
+    puzzle_obj.dyn_total_deposit += record.deposit;
+    await puzzle_obj.save();
 }
 
 //
@@ -199,19 +184,36 @@ export async function handleChallengeRaisePeriodDeadlineEvent(event: SubstrateEv
     await puzzle_create_event.save();
 }
 
-async function makeSurePuzzleCreated(puzzle_hash:string):Promise<PuzzleCreatedEvent> {
+async function makeSurePuzzleCreated(puzzle_hash:string, who: string=''):Promise<PuzzleCreatedEvent> {
     let puzzleCreated = await PuzzleCreatedEvent.get(puzzle_hash);
     if(!puzzleCreated) {
+        if(who == '') {
+            throw new Error('Can not create new puzzle store')
+        }
+        await makeAtochaUserStruct(who.toString())
         puzzleCreated = new PuzzleCreatedEvent(puzzle_hash);
+        puzzleCreated.whoId = who;
         puzzleCreated.puzzle_hash = puzzle_hash;
         puzzleCreated.dyn_have_matched_answer = false;
         puzzleCreated.dyn_raise_deadline = BigInt(0);
         puzzleCreated.dyn_challenge_deadline = BigInt(0);
+        puzzleCreated.dyn_total_deposit = BigInt(0);
         puzzleCreated.dyn_challenge_status = 'Raise';
         puzzleCreated.dyn_puzzle_status = 'PUZZLE_STATUS_IS_SOLVING';
         await puzzleCreated.save();
     }
     return puzzleCreated;
 }
+
+async function makeAtochaUserStruct(acc:string):Promise<AtochaUserStruct> {
+    logger.info(`makeAtochaUserStruct = ${acc}`);
+    let atochaUser = await AtochaUserStruct.get(acc);
+    if(!atochaUser) {
+        atochaUser = new AtochaUserStruct(acc);
+        await atochaUser.save();
+    }
+    return atochaUser;
+}
+
 
 
