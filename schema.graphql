@@ -105,6 +105,7 @@ type PuzzleDepositEvent @entity {
   who: AtochaUserStruct!
   deposit: BigInt!
   tip: String
+  kind: String
 }
 
 # atochaModule.AnnouncePuzzleChallengeDeadline

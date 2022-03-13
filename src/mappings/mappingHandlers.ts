@@ -136,7 +136,7 @@ export async function handleTakePointRewardEvent(event: SubstrateEvent): Promise
 
 // handleAdditionalSponsorshipEvent rename to handlePuzzleDepositEvent
 export async function handlePuzzleDepositEvent(event: SubstrateEvent): Promise<void> {
-    const {event: {data: [puzzle_hash, who, deposit, tip]}} = event;
+    const {event: {data: [puzzle_hash, who, deposit, tip, kind]}} = event;
     await makeAtochaUserStruct(who.toString())
     const puzzle_obj = await makeSurePuzzleCreated(puzzle_hash.toHuman().toString(), who.toString());
     const record = new PuzzleDepositEvent(`${event.block.block.header.number.toString()}-${event.idx}`);
@@ -146,6 +146,7 @@ export async function handlePuzzleDepositEvent(event: SubstrateEvent): Promise<v
     record.whoId = who.toString();
     record.deposit = (deposit as Balance).toBigInt();
     record.tip = tip?tip.toHuman().toString():'';
+    record.kind = kind?kind.toHuman().toString():'';
     await record.save();
 
     puzzle_obj.dyn_total_deposit += record.deposit;
