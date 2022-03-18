@@ -9,15 +9,15 @@ schema:
   file: "./schema.graphql"
 
 network:
-  endpoint: 'ws://148.72.247.143:8844'
-  genesisHash: '0x17264823cc020f0f009cfef5e75b6c5d8cb020ef18e2d62ff613db6cfe46d806' # Atocha
+  endpoint: 'wss://gateway.testnet.octopus.network/atocha/yevqd2d4jhm0dqakaj4hkbyjjfg6ukbu'
+  genesisHash: '0x1a0aadf6b8c9cee2789c8141e50340ceaccce41dc101569dbea8d8ca9dd8b856' # Atocha - OTC - TestNet
 
 dataSources:
   - kind: substrate/Runtime
 #    startBlock: 63000
 #    startBlock: 129700
 #    startBlock: 201200
-    startBlock: 253100
+    startBlock: 153000
     mapping:
       file: "./dist/index.js"
       handlers:
