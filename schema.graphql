@@ -65,7 +65,7 @@ type PuzzleStatusChangeEvent @entity {
   puzzle_status: String!
 }
 
-# atochaFinace.TakeTokenReward
+# atochaFinance.TakeTokenReward
 type TakeTokenRewardEvent @entity {
   id: ID! # Puzzle hash.
   event_bn: BigInt!
@@ -75,7 +75,7 @@ type TakeTokenRewardEvent @entity {
   fee: BigInt!
 }
 
-# atochaFinace.TakePointReward
+# atochaFinance.TakePointReward
 type TakePointRewardEvent @entity {
   id: ID! # Puzzle hash.
   event_bn: BigInt!
@@ -117,7 +117,7 @@ type AnnouncePuzzleChallengeDeadlineEvent @entity {
   puzzle_info: PuzzleCreatedEvent!
 }
 
-# atochaFinace.ChallengeRaisePeriodDeadline
+# atochaFinance.ChallengeRaisePeriodDeadline
 type ChallengeRaisePeriodDeadlineEvent @entity {
   id: ID! # block_number + event_id
   deadline: BigInt!

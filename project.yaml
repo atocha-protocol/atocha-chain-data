@@ -17,7 +17,7 @@ dataSources:
 #    startBlock: 63000
 #    startBlock: 129700
 #    startBlock: 201200
-    startBlock: 153000
+    startBlock: 427144
     mapping:
       file: "./dist/index.js"
       handlers:
@@ -34,12 +34,12 @@ dataSources:
         - handler: handleChallengeDepositEvent
           kind: substrate/EventHandler
           filter:
-            module: atochaFinace
+            module: atochaFinance
             method: ChallengeDeposit
         - handler: handleChallengeStatusChangeEvent
           kind: substrate/EventHandler
           filter:
-            module: atochaFinace
+            module: atochaFinance
             method: ChallengeStatusChange
         - handler: handlePuzzleStatusChangeEvent
           kind: substrate/EventHandler
@@ -49,17 +49,17 @@ dataSources:
         - handler: handleTakeTokenRewardEvent
           kind: substrate/EventHandler
           filter:
-            module: atochaFinace
+            module: atochaFinance
             method: TakeTokenReward
         - handler: handleTakePointRewardEvent
           kind: substrate/EventHandler
           filter:
-            module: atochaFinace
+            module: atochaFinance
             method: TakePointReward
         - handler: handlePuzzleDepositEvent
           kind: substrate/EventHandler
           filter:
-            module: atochaFinace
+            module: atochaFinance
             method: PuzzleDeposit
         - handler: handleAnnouncePuzzleChallengeDeadlineEvent
           kind: substrate/EventHandler
@@ -69,6 +69,6 @@ dataSources:
         - handler: handleChallengeRaisePeriodDeadlineEvent
           kind: substrate/EventHandler
           filter:
-            module: atochaFinace
+            module: atochaFinance
             method: ChallengeRaisePeriodDeadline
 
