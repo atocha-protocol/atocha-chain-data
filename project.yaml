@@ -8,16 +8,20 @@ repository: "https://github.com/subquery/subql-starter"
 schema:
   file: "./schema.graphql"
 
+#network:
+#  endpoint: 'wss://gateway.testnet.octopus.network/atocha/yevqd2d4jhm0dqakaj4hkbyjjfg6ukbu'
+#  genesisHash: '0x1a0aadf6b8c9cee2789c8141e50340ceaccce41dc101569dbea8d8ca9dd8b856' # Atocha - OTC - TestNet
+
 network:
-  endpoint: 'wss://gateway.testnet.octopus.network/atocha/yevqd2d4jhm0dqakaj4hkbyjjfg6ukbu'
-  genesisHash: '0x1a0aadf6b8c9cee2789c8141e50340ceaccce41dc101569dbea8d8ca9dd8b856' # Atocha - OTC - TestNet
+  endpoint: 'ws://148.72.247.143:8844'
+  genesisHash: '0xfcb591c95abea3dd2d26452cffa40e77b6814c0d54f1595d1411cc3e2620e6b3' # Atocha - OTC - TestNet
 
 dataSources:
   - kind: substrate/Runtime
 #    startBlock: 63000
 #    startBlock: 129700
 #    startBlock: 201200
-    startBlock: 89800
+    startBlock: 1
     mapping:
       file: "./dist/index.js"
       handlers:
