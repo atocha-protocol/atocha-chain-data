@@ -161,6 +161,7 @@ export async function handleAnnouncePuzzleChallengeDeadlineEvent(event: Substrat
     // before check AnnouncePuzzleChallengeDeadlineEvent exists
     let announceCheck = await AnnouncePuzzleChallengeDeadlineEvent.get(`${event.block.block.header.number.toString()}-${event.idx}`);
     if(!announceCheck) {
+        logger.info(`AnnouncePuzzleChallengeDeadlineEvent Not exists.`);
         const record = new AnnouncePuzzleChallengeDeadlineEvent(`${event.block.block.header.number.toString()}-${event.idx}`);
         record.puzzle_infoId = puzzle_hash.toHuman().toString();
         record.deadline = BigInt(deadline.toString());
@@ -171,6 +172,8 @@ export async function handleAnnouncePuzzleChallengeDeadlineEvent(event: Substrat
         let puzzle_create_event = await PuzzleCreatedEvent.get(puzzle_hash.toHuman().toString());
         puzzle_create_event.dyn_challenge_deadline = record.deadline;
         await puzzle_create_event.save();
+    }else{
+        logger.info(`AnnouncePuzzleChallengeDeadlineEvent Yes exists.`);
     }
 }
 
