@@ -156,12 +156,13 @@ export async function handlePuzzleDepositEvent(event: SubstrateEvent): Promise<v
 //
 export async function handleAnnouncePuzzleChallengeDeadlineEvent(event: SubstrateEvent): Promise<void> {
     const {event: {data: [puzzle_hash, deadline]}} = event;
-    await makeSurePuzzleCreated(puzzle_hash.toHuman().toString());
+    logger.info(`DEBUG call  handleAnnouncePuzzleChallengeDeadlineEvent`);
 
     // before check AnnouncePuzzleChallengeDeadlineEvent exists
     let announceCheck = await AnnouncePuzzleChallengeDeadlineEvent.get(`${event.block.block.header.number.toString()}-${event.idx}`);
     if(!announceCheck) {
         logger.info(`AnnouncePuzzleChallengeDeadlineEvent Not exists.`);
+        await makeSurePuzzleCreated(puzzle_hash.toHuman().toString());
         const record = new AnnouncePuzzleChallengeDeadlineEvent(`${event.block.block.header.number.toString()}-${event.idx}`);
         record.puzzle_infoId = puzzle_hash.toHuman().toString();
         record.deadline = BigInt(deadline.toString());
