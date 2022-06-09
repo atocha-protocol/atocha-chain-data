@@ -160,20 +160,18 @@ export async function handleAnnouncePuzzleChallengeDeadlineEvent(event: Substrat
 
     // before check AnnouncePuzzleChallengeDeadlineEvent exists
     let announceCheck = await AnnouncePuzzleChallengeDeadlineEvent.get(`${event.block.block.header.number.toString()}-${event.idx}`);
-    if(announceCheck) {
-        return ;
+    if(!announceCheck) {
+        const record = new AnnouncePuzzleChallengeDeadlineEvent(`${event.block.block.header.number.toString()}-${event.idx}`);
+        record.puzzle_infoId = puzzle_hash.toHuman().toString();
+        record.deadline = BigInt(deadline.toString());
+        record.event_bn = BigInt(event.block.block.header.number.toString());
+        record.event_hash = event.block.block.hash.toHuman().toString()
+        await record.save();
+
+        let puzzle_create_event = await PuzzleCreatedEvent.get(puzzle_hash.toHuman().toString());
+        puzzle_create_event.dyn_challenge_deadline = record.deadline;
+        await puzzle_create_event.save();
     }
-
-    const record = new AnnouncePuzzleChallengeDeadlineEvent(`${event.block.block.header.number.toString()}-${event.idx}`);
-    record.puzzle_infoId = puzzle_hash.toHuman().toString();
-    record.deadline = BigInt(deadline.toString());
-    record.event_bn = BigInt(event.block.block.header.number.toString());
-    record.event_hash = event.block.block.hash.toHuman().toString()
-    await record.save();
-
-    let puzzle_create_event = await PuzzleCreatedEvent.get(puzzle_hash.toHuman().toString());
-    puzzle_create_event.dyn_challenge_deadline = record.deadline;
-    await puzzle_create_event.save();
 }
 
 //
